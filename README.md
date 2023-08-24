@@ -1,7 +1,6 @@
 # Инструкция по установке:
 1. Перейдите в папку, где должен будет храниться проект
-2. Выполните данные комманды:
-   - composer create-project symfony/skeleton:"6.3.*" my_project_directory
-   - composer require symfony/expression-language
+2. Выполните комманду composer create-project symfony/skeleton:"6.3.*" my_project_directory
 4. Перейдите в папку с проектом
-5. скопируйте в корень проекта файл index.php
+5. Выполните комманду composer require symfony/expression-language
+6. скопируйте в корень проекта файл index.php
