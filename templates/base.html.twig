@@ -1,0 +1,109 @@
+{% set input_id_data = constant('App\\Controller\\MainController::INPUT_ID_DATA') %}
+{% set input_id_expression = constant('App\\Controller\\MainController::INPUT_ID_EXPRESSION') %}
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>{% block title %}Symfony Expression Language Sandbox{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+
+        {% block stylesheets %}
+            <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet"/>
+        {% endblock %}
+
+        {% block javascripts %}
+            <script src="{{ asset('js/bootstrap.bundle.min.js') }}" defer></script>
+            <script src="{{ asset('js/jquery-3.7.0.min.js') }}" defer></script>
+            <script defer>
+                window.onload = function () {
+                    $(document).ready(function () {
+                        $('body').on('keyup', '#{{ input_id_data }}', function () {
+                            try {
+                                let obj = $.parseJSON($(this).val());
+                                $(this).val(JSON.stringify(obj, undefined, 4));
+                            } catch (err) {
+                                console.warn(err.message);
+                            }
+                        });
+                    });
+                }
+            </script>
+            <style type="text/css" media="screen">
+                .editor-container {
+                weight: 100%;
+                height: 540px;
+                margin: 20px auto;
+                position: relative;
+                }
+
+                #editor {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                height: 100%;
+                width: 100%;
+                font-size: 20px;
+                }
+            </style>
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}
+            <h1 class="mb-5 text-center">Symfony Expression Language Sandbox</h1>
+                
+            
+            <div class="container-fluid container-xl">
+                {% if errors is not empty %}
+                    {% for error in errors %}
+                        <div class="alert alert-danger py-1">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+                <form method="post">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label d-block text-center text-md-end{{ errors[input_id_data] is defined ? ' text-danger' : '' }}" for="{{ input_id_data }}">Данные в формате JSON</label>
+                            <div class="editor-container" onchange="Test()">
+                                <div id="editor">{{ values[input_id_data] ?? '' }}</div>
+                            </div>
+                            <input id="{{ input_id_data }}" name="{{ input_id_data }}" type="hidden" autocomplete="off"></input>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label d-block text-center text-md-start{{ errors[input_id_expression] is defined ? ' text-danger' : '' }}" for="{{ input_id_expression }}">Выражение</label>
+                            <textarea class="form-control mb-3{{ errors[input_id_expression] is defined ? ' is-invalid' : '' }}" name="{{ input_id_expression }}" id="{{ input_id_expression }}" rows="10" style="min-height: 10rem">{{ values[input_id_expression] ?? '' }}</textarea> 
+                        </div>
+                        <div class="col-6 text-end">
+                            <button class="btn btn-outline-success" type="submit" onclick="Test()">Выполнить</button>
+                        </div>
+                        <div class="col-6 text-start">
+                            <a class="btn btn-outline-danger" href="./">Сбросить</a>
+                        </div>
+                        {% if result is not empty %}
+                            <div class="col-12 my-3">
+                                <span class="form-label d-block text-center text-md-start">Результат</span>
+                                <div class="form-control bg-light" id="result"><pre>{{ result }}</pre></div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                </form>
+            </div>
+        {% endblock %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.5.3/ace.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            let editor = document.querySelector("#editor");
+            ace.edit(editor, {
+            theme: "ace/theme/cobalt",
+            mode: "ace/mode/json",
+            });
+            function Test(){
+                var editor = ace.edit("editor");
+                document.getElementById("{{ input_id_data }}").value = editor.getSession().getValue();
+            }
+        </script>
+    </body>
+</html>
